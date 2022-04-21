@@ -33,7 +33,7 @@ app.use(cookieParser());
 // Configuring routers
 //app.use('/', indexRouter);
 const BAD_REQUEST = "Bad request, Request Body Error"
-if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV !== "production") {
     app.use(express.static(path.join(__dirname, '/client/dist/client')));
     app.get('/', (req, res) => {
         res.sendFile(
