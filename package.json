@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node app.js",
+    "build": "cd client && npm run build",
+    "heroku-postbuild" : "npm run install-client && npm install -g @angular/cli && npm run build",
+    "install-client": "cd client && npm install"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
