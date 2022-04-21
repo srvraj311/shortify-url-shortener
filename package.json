@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node app.js",
+    "start": "node ./bin/www",
     "build": "cd client && npm run build",
     "heroku-postbuild" : "npm run install-client && npm install -g @angular/cli && npm run build",
     "install-client": "cd client && npm install"
