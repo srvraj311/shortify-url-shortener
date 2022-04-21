@@ -1,0 +1,9 @@
+<div class="container">
+  <div class="title">Shortify</div>
+  <p>URL Shortener for Everyone</p>
+    <input #ip type="text" placeholder="Eg. https://www.github.com/srvraj311">
+    <button (click)="convert(ip.value)">Shortify</button>
+  <br>
+  <br>
+  <p *ngIf="visible" class="out">😺😺 Here's your new Url -> 😺😺 <br> <span style="color: green; font-size: 3rem">{{s_url}}</span></p>
+</div>

@@ -1,0 +1,3 @@
+{
+  "mongo_uri" : "mongodb+srv://srvraj311:srvraj_7870@enwrite.2m74x.mongodb.net/url-shortener?authSource=admin&replicaSet=atlas-14g4b2-shard-0&w=majority&readPreference=primary&retryWrites=true&ssl=true"
+}
