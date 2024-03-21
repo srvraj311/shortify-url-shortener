@@ -6,9 +6,7 @@ const db = require('mongoose');
 const fs = require('fs')
 const cors = require('cors')
 
-
-const config = JSON.parse(fs.readFileSync('./config.json',).toString())
-db.connect(config['mongo_uri'], {
+db.connect(process.env.DB_URL, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     },
