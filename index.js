@@ -30,6 +30,7 @@ app.use(cookieParser());
 
 // Configuring routers
 //app.use('/', indexRouter);
+app.use('/api', api_router)
 const BAD_REQUEST = "Bad request, Request Body Error"
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, '/client/dist/client')));
@@ -55,7 +56,7 @@ app.get("/:key", async (req, res, next) => {
     }else res.status(400).json({error : BAD_REQUEST});
 })
 
-app.use('/api', api_router)
+
 
 
 module.exports = app;
