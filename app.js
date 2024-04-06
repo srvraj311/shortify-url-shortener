@@ -29,7 +29,6 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 
-
 // Configuring routers
 //app.use('/', indexRouter);
 const BAD_REQUEST = "Bad request, Request Body Error"
@@ -42,9 +41,10 @@ if (process.env.NODE_ENV === "production") {
     })
 }else{
     app.get("/" , (req, res) => {
-        res.send("Express Working");
+        res.send("Express Working in Local Device");
     })
 }
+
 app.get("/:key", async (req, res, next) => {
     const key = req.params.key
     if(key){
