@@ -5,7 +5,8 @@ const logger = require('morgan');
 const db = require('mongoose');
 const fs = require('fs')
 const cors = require('cors')
-
+// Use dotenv
+const dotenv = require('dotenv').config();
 db.connect(process.env.DB_URL, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -56,6 +57,10 @@ app.get("/:key", async (req, res, next) => {
     }else res.status(400).json({error : BAD_REQUEST});
 })
 
+
+app.listen(process.env.PORT || 3000 , () => {
+    console.log(`App listening on port ${process.env.PORT || 3000}`);
+})
 
 
 
