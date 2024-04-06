@@ -6,9 +6,7 @@ const db = require('mongoose');
 const fs = require('fs')
 const cors = require('cors')
 
-
-const config = JSON.parse(fs.readFileSync('./config.json',).toString())
-db.connect(config['mongo_uri'], {
+db.connect(process.env.DB_URL, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     },
@@ -31,6 +29,7 @@ app.use(cookieParser());
 
 // Configuring routers
 //app.use('/', indexRouter);
+app.use('/api', api_router)
 const BAD_REQUEST = "Bad request, Request Body Error"
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, '/client/dist/client')));
@@ -57,7 +56,7 @@ app.get("/:key", async (req, res, next) => {
     }else res.status(400).json({error : BAD_REQUEST});
 })
 
-app.use('/api', api_router)
+
 
 
 module.exports = app;
