@@ -6,7 +6,9 @@ import { aggregateRecent } from "@/server/workers/aggregation-worker";
 import { runSweep } from "@/server/workers/sweeper";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 300;
+// Hobby plan caps serverless functions at 60s. The drain loop below is bounded
+// and the daily cron is idempotent, so a truncated run simply resumes next time.
+export const maxDuration = 60;
 
 /**
  * Combined daily cron (Plan §63). The Vercel Hobby plan only runs cron once per
