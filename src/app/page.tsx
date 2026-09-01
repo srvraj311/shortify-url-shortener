@@ -84,8 +84,8 @@ export default function Home() {
         </div>
 
         <div className="footer">
-          <p>
-            <a href="/docs/api">API docs</a> · <a href="/health">/health</a> · <a href="/metrics">/metrics</a>
+          <p className="small">
+            System endpoints: <code>/health</code> · <code>/ready</code> · <code>/metrics</code>
           </p>
           <p className="small">A system-design reference implementation. Not a commercial service.</p>
         </div>

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Nav } from "@/components/Nav";
 import { api, ApiError } from "@/lib/client/api";
 import { useAuth } from "@/lib/client/useAuth";
@@ -178,7 +179,7 @@ export default function AdminPage() {
           </table>
         </div>
 
-        <p className="footer"><a href="/admin/performance">→ Performance lab</a></p>
+        <p className="footer"><Link href="/admin/performance">→ Performance lab</Link></p>
       </div>
     </>
   );

@@ -105,7 +105,7 @@ export async function withBreaker<T>(
     b.failures = 0;
     breakers.set(name, b);
     return result;
-  } catch (err) {
+  } catch {
     b.failures++;
     if (b.state === "HALF_OPEN" || b.failures >= failureThreshold) {
       b.state = "OPEN";

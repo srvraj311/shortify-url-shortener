@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Unit tests
+        run: npm test
+      - name: Build
+        run: npm run build
+        env:
+          # Build must not require real secrets — config is validated lazily.
+          MONGODB_URI: "mongodb://placeholder/x"
+          AUTH_SECRET: "ci-placeholder-secret-value"
+
+  # Deployment itself is handled by Vercel's Git integration (main -> production,
+  # PRs -> preview). This job only runs the post-deploy index sync, and only when
+  # the required secrets are configured.
+  post-deploy-indexes:
+    needs: verify
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - name: Sync production indexes
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          MONGODB_DB_NAME: ${{ secrets.MONGODB_DB_NAME }}
+        run: |
+          if [ -z "$MONGODB_URI" ]; then
+            echo "MONGODB_URI secret not set — skipping index sync."
+            exit 0
+          fi
+          npm run db:indexes
