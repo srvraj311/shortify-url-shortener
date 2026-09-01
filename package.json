@@ -1,21 +1,45 @@
 {
-  "name": "url-shortner-fullstack",
-  "version": "0.0.0",
+  "name": "url-shortener",
+  "version": "1.0.0",
   "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "start": "node index.js",
-    "build": "cd client && npm run build",
-    "heroku-postbuild": "npm run install-client && npm install -g @angular/cli && npm run build",
-    "install-client": "cd client && npm install"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "seed:admin": "tsx scripts/seed-admin.ts",
+    "db:indexes": "tsx scripts/ensure-indexes.ts"
   },
   "dependencies": {
-    "cookie-parser": "~1.4.4",
-    "cors": "^2.8.5",
-    "debug": "~2.6.9",
-    "dotenv": "^16.4.5",
-    "express": "~4.16.1",
-    "mongoose": "^6.3.0",
-    "morgan": "~1.9.1",
-    "validator": "^13.7.0"
+    "@upstash/redis": "^1.34.3",
+    "bcryptjs": "^2.4.3",
+    "mongoose": "^8.8.0",
+    "nanoid": "^5.0.9",
+    "next": "^15.1.3",
+    "qrcode": "^1.5.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "ua-parser-js": "^1.0.39",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^22.10.2",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@types/ua-parser-js": "^0.7.39",
+    "eslint": "^9.17.0",
+    "eslint-config-next": "^15.1.3",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   }
 }

@@ -1,7 +1,43 @@
+# dependencies
 /node_modules
-/.idea
-/client/node_modules
-/client/.vscode
-/client/.angular
+/.pnp
+.pnp.js
 
+# next
+/.next/
+/out/
+next-env.d.ts
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+.idea
+.vscode
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# env
 .env
+.env*.local
+.env.production
+
+# vercel
+.vercel
+
+# test
+/coverage
+
+# load tests
+/load-tests/results
+
+# legacy build artifacts (kept as source reference only)
+/legacy/node_modules
+/legacy/client/node_modules
+/legacy/client/.angular
+/legacy/client/dist
