@@ -1,4 +1,5 @@
-import { Schema, model, models, type InferSchemaType, type Model } from "mongoose";
+import mongoose, { type InferSchemaType, type Model } from "mongoose";
+const { Schema, model, models } = mongoose;
 
 /**
  * API key (Plan §16). Raw key shown once at creation; only the hash is stored.

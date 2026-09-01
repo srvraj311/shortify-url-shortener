@@ -1,4 +1,5 @@
-import { Schema, model, models, type InferSchemaType, type Model } from "mongoose";
+import mongoose, { type InferSchemaType, type Model } from "mongoose";
+const { Schema, model, models } = mongoose;
 
 /** Dead-letter queue (Plan §29). Events that exhausted their retry budget. */
 const DeadLetterSchema = new Schema(

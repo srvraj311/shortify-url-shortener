@@ -1,4 +1,5 @@
-import { Schema, model, models, type InferSchemaType, type Model } from "mongoose";
+import mongoose, { type InferSchemaType, type Model } from "mongoose";
+const { Schema, model, models } = mongoose;
 
 /**
  * Server-side session record (Plan §14). The cookie carries an opaque id; only

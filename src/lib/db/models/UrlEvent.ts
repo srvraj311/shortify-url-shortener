@@ -1,4 +1,5 @@
-import { Schema, model, models, type InferSchemaType, type Model } from "mongoose";
+import mongoose, { type InferSchemaType, type Model } from "mongoose";
+const { Schema, model, models } = mongoose;
 import { getConfig } from "@/lib/config";
 
 /**
@@ -33,9 +34,8 @@ const UrlEventSchema = new Schema(
 
 // Per-URL analytics queries (Plan §8).
 UrlEventSchema.index({ urlId: 1, timestamp: -1 });
-// Global time-range scans for admin metrics.
-UrlEventSchema.index({ timestamp: 1 });
-// Retention TTL for raw events (Plan §41). Days come from config at load time.
+// Single index on `timestamp` serves BOTH global time-range scans (Plan §46)
+// and raw-event retention TTL (Plan §41). Days come from config at load time.
 UrlEventSchema.index(
   { timestamp: 1 },
   {

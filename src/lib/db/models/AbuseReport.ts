@@ -1,4 +1,5 @@
-import { Schema, model, models, type InferSchemaType, type Model } from "mongoose";
+import mongoose, { type InferSchemaType, type Model } from "mongoose";
+const { Schema, model, models } = mongoose;
 
 /** User-submitted abuse report (Plan §38, §54). */
 const AbuseReportSchema = new Schema(

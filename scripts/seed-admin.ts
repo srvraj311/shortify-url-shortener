@@ -3,7 +3,7 @@
  *
  *   ADMIN_EMAIL=you@example.com ADMIN_PASSWORD='...' npm run seed:admin
  */
-import "dotenv/config";
+import "./_env";
 import { connectMongo, mongoose } from "@/lib/db/mongoose";
 import { User } from "@/lib/db/models";
 import { hashPassword } from "@/lib/crypto";

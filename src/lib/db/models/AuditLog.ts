@@ -1,4 +1,5 @@
-import { Schema, model, models, type InferSchemaType, type Model } from "mongoose";
+import mongoose, { type InferSchemaType, type Model } from "mongoose";
+const { Schema, model, models } = mongoose;
 
 /** Append-only audit trail (Plan §40). Never contains secrets. */
 const AuditLogSchema = new Schema(
