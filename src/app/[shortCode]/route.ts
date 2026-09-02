@@ -27,7 +27,10 @@ export const GET = route(
   async ({ req, params }) => {
     const shortCode = String(params.shortCode ?? "");
 
-    if (!shortCode || isReservedPath(shortCode) || shortCode.length > 64) {
+    // A short code is [3,32] of [A-Za-z0-9_-]. Anything else (favicon.ico,
+    // robots.txt, apple-touch-icon.png, stray dotfiles) is definitely not one —
+    // 404 without touching Redis or Mongo.
+    if (!/^[A-Za-z0-9_-]{3,64}$/.test(shortCode) || isReservedPath(shortCode)) {
       return notFoundHtml(shortCode);
     }
 
