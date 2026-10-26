@@ -1,0 +1,213 @@
+openapi: 3.1.0
+info:
+  title: Shortify URL Shortener API
+  version: "1.0.0"
+  description: >
+    Production-oriented URL shortener. See docs/api/README.md for auth,
+    idempotency and rate-limit semantics.
+servers:
+  - url: https://shortify.vercel.app/api/v1
+    description: production
+components:
+  securitySchemes:
+    cookieAuth: { type: apiKey, in: cookie, name: sid }
+    apiKey: { type: http, scheme: bearer, bearerFormat: "usk_*" }
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: { type: string }
+            message: { type: string }
+            requestId: { type: string }
+            details: {}
+    Url:
+      type: object
+      properties:
+        id: { type: string }
+        shortCode: { type: string }
+        shortUrl: { type: string, format: uri }
+        originalUrl: { type: string, format: uri }
+        status: { type: string, enum: [ACTIVE, DISABLED, EXPIRED, FLAGGED] }
+        type: { type: string, enum: [RANDOM, ALIAS] }
+        customAlias: { type: [string, "null"] }
+        title: { type: [string, "null"] }
+        expiresAt: { type: [string, "null"], format: date-time }
+        clickCount: { type: integer }
+        version: { type: integer }
+        createdAt: { type: string, format: date-time }
+    Page:
+      type: object
+      properties:
+        items: { type: array, items: { $ref: "#/components/schemas/Url" } }
+        nextCursor: { type: [string, "null"] }
+        hasMore: { type: boolean }
+  responses:
+    Error:
+      description: Error contract
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+paths:
+  /auth/register:
+    post:
+      summary: Register + start a session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, minLength: 8 }
+      responses:
+        "201": { description: created }
+        "409": { $ref: "#/components/responses/Error" }
+        "429": { $ref: "#/components/responses/Error" }
+  /auth/login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        "200": { description: ok, sets sid cookie }
+        "401": { $ref: "#/components/responses/Error" }
+  /auth/me:
+    get:
+      summary: Current user
+      security: [{ cookieAuth: [] }, { apiKey: [] }]
+      responses:
+        "200": { description: ok }
+        "401": { $ref: "#/components/responses/Error" }
+  /urls:
+    post:
+      summary: Create a short URL (anonymous allowed)
+      parameters:
+        - { name: Idempotency-Key, in: header, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url]
+              properties:
+                url: { type: string, format: uri }
+                alias: { type: string, minLength: 3, maxLength: 32 }
+                expiresAt: { type: string, format: date-time }
+                title: { type: string }
+                visibility: { type: string, enum: [PUBLIC, PRIVATE] }
+      responses:
+        "201":
+          description: created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { url: { $ref: "#/components/schemas/Url" } }
+        "400": { $ref: "#/components/responses/Error" }
+        "409": { $ref: "#/components/responses/Error" }
+        "429": { $ref: "#/components/responses/Error" }
+    get:
+      summary: List own URLs (cursor pagination)
+      security: [{ cookieAuth: [] }, { apiKey: [] }]
+      parameters:
+        - { name: limit, in: query, schema: { type: integer, default: 20, maximum: 100 } }
+        - { name: cursor, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string, enum: [ACTIVE, DISABLED, EXPIRED, FLAGGED] } }
+        - { name: search, in: query, schema: { type: string } }
+      responses:
+        "200":
+          description: page
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Page" }
+  /urls/{id}:
+    parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+    get:
+      summary: Get one URL
+      security: [{ cookieAuth: [] }, { apiKey: [] }]
+      responses: { "200": { description: ok }, "403": { $ref: "#/components/responses/Error" }, "404": { $ref: "#/components/responses/Error" } }
+    patch:
+      summary: Update (optimistic concurrency — version required)
+      security: [{ cookieAuth: [] }, { apiKey: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [version]
+              properties:
+                version: { type: integer }
+                status: { type: string, enum: [ACTIVE, DISABLED] }
+                expiresAt: { type: [string, "null"], format: date-time }
+                title: { type: [string, "null"] }
+                visibility: { type: string, enum: [PUBLIC, PRIVATE] }
+                tags: { type: array, items: { type: string } }
+      responses: { "200": { description: ok }, "409": { $ref: "#/components/responses/Error" } }
+    delete:
+      summary: Delete
+      security: [{ cookieAuth: [] }, { apiKey: [] }]
+      responses: { "204": { description: deleted } }
+  /urls/{id}/analytics:
+    get:
+      summary: Analytics summary
+      security: [{ cookieAuth: [] }, { apiKey: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses: { "200": { description: ok } }
+  /urls/{id}/report:
+    post:
+      summary: Report abuse (anonymous allowed)
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string, enum: [SPAM, MALWARE, PHISHING, ABUSE, OTHER] }
+                detail: { type: string }
+      responses: { "202": { description: received } }
+  /api-keys:
+    get:
+      summary: List API keys
+      security: [{ cookieAuth: [] }]
+      responses: { "200": { description: ok } }
+    post:
+      summary: Create API key (raw key returned once)
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties: { name: { type: string }, expiresInDays: { type: integer } }
+      responses: { "201": { description: created } }
+  /{shortCode}:
+    get:
+      servers: [{ url: https://shortify.vercel.app }]
+      summary: Redirect
+      parameters: [{ name: shortCode, in: path, required: true, schema: { type: string } }]
+      responses:
+        "302": { description: redirect to destination }
+        "404": { description: unknown code }
+        "410": { description: expired / disabled }
+        "429": { description: rate limited }
